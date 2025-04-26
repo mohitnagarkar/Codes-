@@ -1,0 +1,40 @@
+HPC 3rd (Min , MAX)
+
+
+
+#include <iostream>
+#include <omp.h>
+#include <climits>
+using namespace std;
+
+void compute_reductions(int arr[], int n) {
+    int min_val = INT_MAX, max_val = INT_MIN, sum = 0;
+
+    #pragma omp parallel for reduction(min: min_val) reduction(max: max_val) reduction(+: sum)
+    for (int i = 0; i < n; i++) {
+        if (arr[i] < min_val) min_val = arr[i];
+        if (arr[i] > max_val) max_val = arr[i];
+        sum += arr[i];
+    }
+
+    cout << "Minimum value: " << min_val << endl;
+    cout << "Maximum value: " << max_val << endl;
+    cout << "Sum: " << sum << endl;
+    cout << "Average: " << (double)sum / n << endl;
+}
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+
+    int* arr = new int[n];
+    cout << "Enter elements:\n";
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
+    compute_reductions(arr, n);
+
+    delete[] arr;
+    return 0;
+}
